@@ -68,12 +68,30 @@ class Checker(object):
             print('{}: Wrong Syntax'.format(str(syntaxerror)))
             return (-11)
 
-    def get_imports(self):
-        stmt = self.parse_file(self._path)
+    def get_imports(self, path):
+        """Return Imports on path
+
+        Params
+        ------
+        path: string -- path of the file
+
+        Return
+        ------
+        stmt: dict -- dict of imports and importFrom
+
+        Error
+        -----
+        -1 -> if there are some problems
+        """
+        stmt = self.parse_file(path)
         if stmt != -10 or stmt != -11:
             searcher = SearchImport()
             searcher.visit(stmt)
             self._imports = searcher.get_imports()
+            return stmt
+        return (-1)
+
+    def get_not_imports_on_file(self):
 
 
 
