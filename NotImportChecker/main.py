@@ -2,6 +2,7 @@
 # GNU General Public License v3
 
 import ast
+import os
 
 
 class SearchImport(ast.NodeVisitor):
@@ -39,6 +40,7 @@ class Checker(object):
     def __init__(self, path):
         self._path = path
         self._imports = dict()
+        self._import_error_list = dict()
 
     def parse_file(self, path):
         """Parse the file
@@ -69,7 +71,7 @@ class Checker(object):
             return (-11)
 
     def get_imports(self, path):
-        """Return Imports on path
+        """Return Imports on file given on path
 
         Params
         ------
@@ -91,18 +93,25 @@ class Checker(object):
             return stmt
         return (-1)
 
-    def get_not_imports_on_file(self):
-
-
-
-a = SearchImport()
-tree = ast.parse('''
-from numpy import (array,hola)
-import sys
-from numpy import vector
-from ninja_ide.gui.core.saraza import hello as h
-import os
-''')
-a.visit(tree)
-
-print(a.get_imports())
+    def get_not_imports_on_file(self, stmt, path=None):
+        if path is None:
+            path = self._path
+        workspace = os.getcwd()
+        os.chdir(path)
+        for key, value in stmt.items():
+            for mod_name in value['mod_name']:
+                try:
+                    if key == mod_name:
+                        exec('import {}'.format(key))
+                    else:
+                        exec('from {} import {}'.format(key, mod_name))
+                except ImportError as e:
+                    self._import_error_list.setdefault(key,
+                                                       {'mod_name': mod_name,
+                                                        'lineno':
+                                                        value['lineno']})
+        os.chdir(workspace)
+        if len(self._import_error_list) == 0:
+            return None
+        else:
+            return self._import_error_list
