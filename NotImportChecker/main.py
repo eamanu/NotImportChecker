@@ -3,6 +3,7 @@
 
 import ast
 import os
+import sys
 
 
 class SearchImport(ast.NodeVisitor):
@@ -120,3 +121,27 @@ class Checker(object):
             return None
         else:
             return self._import_error_list
+
+
+def print_report(dict_not_imports):
+    for key, values in dict_not_imports.items():
+        if values is None:
+            print('{}: OK'.format(key))
+        else:
+            print('{} module have {} Not Imports'.format(key, len(values)))
+            for k, v in values:
+                print('{} on line: {}'.format(k, v['lineno']))
+
+
+if __name__ == "__main__":
+    files = sys.argv
+    checker_list = dict()
+    for f in files:
+        if os.path.dirname(f) == '':
+            c = Checker(os.path.join(
+                os.getcwd(), f)
+                        )
+            checker_list[f] = c.get_not_imports_on_file(c.get_imports())
+        else:
+            c = Checker(f)
+            checker_list[f] = c.get_not_imports_on_file(c.get_imports())
