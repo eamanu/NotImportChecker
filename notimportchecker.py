@@ -103,7 +103,11 @@ class Checker(object):
         if path is None:
             path = self._path
         workspace = os.getcwd()
-        os.chdir(path)
+        dn = os.path.dirname(path)
+        if dn == '':  # if path file is in the current folder
+            os.chdir(path)
+        else:
+            os.chdir(dn)  # if path is complete
         for key, value in stmt.items():
             for mod_name in value['mod_name']:
                 try:
@@ -129,12 +133,12 @@ def print_report(dict_not_imports):
             print('{}: OK'.format(key))
         else:
             print('{} module have {} Not Imports'.format(key, len(values)))
-            for k, v in values:
-                print('{} on line: {}'.format(k, v['lineno']))
+            for k, v in values.items():
+                print('{} on line: {}'.format(k, str(v['lineno'])))
 
 
 if __name__ == "__main__":
-    files = sys.argv
+    files = sys.argv[1:]
     checker_list = dict()
     for f in files:
         if os.path.dirname(f) == '':
@@ -145,3 +149,4 @@ if __name__ == "__main__":
         else:
             c = Checker(f)
             checker_list[f] = c.get_not_imports_on_file(c.get_imports())
+    print_report(checker_list)
