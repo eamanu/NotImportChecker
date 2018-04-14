@@ -128,13 +128,19 @@ class Checker(object):
 
 
 def print_report(dict_not_imports):
-    for key, values in dict_not_imports.items():
-        if values is None:
-            print('{}: OK'.format(key))
-        else:
-            print('{} module have {} Not Imports'.format(key, len(values)))
-            for k, v in values.items():
-                print('{} on line: {}'.format(k, str(v['lineno'])))
+    if dict_not_imports is None:
+        print('There are not not imports')
+    else:
+        for key, values in dict_not_imports.items():
+            if values is None:
+                print('{}: OK'.format(key))
+            else:
+                print('{} module have {} Not Imports'.format(key, len(values)))
+                if isinstance(values['mod_name'], dict):
+                    for v in values['mod_name']:
+                        print('{} on line: {}'.format(v, values['lineno']))
+                else:
+                    print('{} on line: {}'.format(values['mod_name'], values['lineno']))
 
 
 if __name__ == "__main__":
