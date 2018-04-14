@@ -105,7 +105,7 @@ class Checker(object):
         workspace = os.getcwd()
         dn = os.path.dirname(path)
         if dn == '':  # if path file is in the current folder
-            os.chdir(path)
+            os.chdir(workspace)
         else:
             os.chdir(dn)  # if path is complete
         for key, value in stmt.items():
