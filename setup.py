@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # GNU General Public License v3
 
-# BEWARE: This is a minimal version you will most likely need to extend it
 from setuptools import setup
 from codecs import open
 from os import path
