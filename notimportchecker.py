@@ -1,5 +1,11 @@
-# -*- coding: utf-8 -*-
-# GNU General Public License v3
+#!/usr/bin/env python
+__author__ = "Emmanuel Arias <eamanu@eamanu.com>"
+__copyright__ = "Copyright 2018"
+__license__ = "GPL"
+__version__ = "0.0.1b1"
+__maintainer__ = "Emmanuel Arias"
+__email__ = "eamanu@eamanu.com"
+__status__ = "Beta"
 
 import ast
 import os
@@ -11,9 +17,22 @@ class SearchImport(ast.NodeVisitor):
         self._imports = {}
 
     def get_imports(self):
+        """Return a dict of imports on the file
+
+        Parameters
+        ----------
+        None
+
+        Return
+        ------
+        self._imports: dict -> dict of imports
+        """
         return self._imports
 
     def visit_ImportFrom(self, stmt):
+        """Visit Import from
+        This is the visit from of ast module
+        """
         module_name = stmt.module
         names = stmt.names
         names_dict = {}
@@ -29,6 +48,9 @@ class SearchImport(ast.NodeVisitor):
             self.generic_visit(child)
 
     def visit_Import(self, stmt):
+        """Visit Import
+        This is the visit of ast module
+        """
         for al in stmt.names:
             self._imports.setdefault(al.name, {'mod_name':
                                                {al.name: al.name},
@@ -39,6 +61,12 @@ class SearchImport(ast.NodeVisitor):
 
 class Checker(object):
     def __init__(self, path):
+        """Checker object
+        Parameters
+        ----------
+        path: string -> path file
+
+        """
         self._path = path
         self._imports = dict()
         self._import_error_list = dict()
@@ -100,6 +128,16 @@ class Checker(object):
         return (-1)
 
     def get_not_imports_on_file(self, stmt, path=None):
+        """Get imports that dont exist on the file
+
+        Parameters
+        ----------
+        stmt: dict -> dict of not imports in the file
+            {'sys':{'lineno': 1, 'mod_name': 'sys'}}
+
+        path: string -> default None. path is the basename
+        of the file.
+        """
         if path is None:
             path = self._path
         workspace = os.getcwd()
@@ -128,6 +166,7 @@ class Checker(object):
 
 
 def print_report(dict_not_imports):
+    """Print the report of not imports on the file"""
     if dict_not_imports is None:
         print('There are not not imports')
     else:
@@ -140,7 +179,8 @@ def print_report(dict_not_imports):
                     for v in values['mod_name']:
                         print('{} on line: {}'.format(v, values['lineno']))
                 else:
-                    print('{} on line: {}'.format(values['mod_name'], values['lineno']))
+                    print('{} on line: {}'.format(values['mod_name'],
+                                                  values['lineno']))
 
 
 if __name__ == "__main__":
