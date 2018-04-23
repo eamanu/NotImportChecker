@@ -2,7 +2,7 @@
 __author__ = "Emmanuel Arias <eamanu@eamanu.com>"
 __copyright__ = "Copyright 2018"
 __license__ = "GPL"
-__version__ = "0.0.1b1"
+__version__ = "0.0.2b1"
 __maintainer__ = "Emmanuel Arias"
 __email__ = "eamanu@eamanu.com"
 __status__ = "Beta"
@@ -120,7 +120,7 @@ class Checker(object):
             path = path_file
 
         stmt = self.parse_file(path)
-        if stmt != -10 or stmt != -11:
+        if stmt != -10 and stmt != -11:
             searcher = SearchImport()
             searcher.visit(stmt)
             self._imports = searcher.get_imports()
@@ -135,9 +135,15 @@ class Checker(object):
         stmt: dict -> dict of not imports in the file
             {'sys':{'lineno': 1, 'mod_name': 'sys'}}
 
+        if stmt == -1 (see parse_file) return None
+
         path: string -> default None. path is the basename
         of the file.
         """
+        if (stmt == -1):
+            self._import_error_list = {}
+            return None
+
         if path is None:
             path = self._path
         workspace = os.getcwd()
